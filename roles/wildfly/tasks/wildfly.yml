@@ -57,16 +57,16 @@
    state: directory
   
 - name: WildFly -=- Copy GELF Logging files (step 1 of 4)
-  copy: src=module.xml dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  copy: src=gelf/module.xml dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
   
 - name: WildFly -=- Copy GELF Logging files (step 2 of 4)
-  copy: src=logstash-gelf-1.11.2.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  copy: src=gelf/logstash-gelf-1.11.2.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
   
 - name: WildFly -=- Copy GELF Logging files (step 3 of 4)
-  copy: src=commons-pool2-2.4.3.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  copy: src=gelf/commons-pool2-2.4.3.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
   
 - name: WildFly -=- Copy GELF Logging files (step 4 of 4)
-  copy: src=jedis-2.9.0.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  copy: src=gelf/jedis-2.9.0.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
   
   
 - name: WildFly -=- Create directory for PostgreSQL driver
@@ -79,10 +79,10 @@
    state: directory
   
 - name: WildFly -=- Copy PostgreSQL driver (step 1 of 2)
-  copy: src=module.xml dest={{ wildfly_work_dir }}/modules/org/postgresql/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  copy: src=postgresql/module.xml dest={{ wildfly_work_dir }}/modules/org/postgresql/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
   
 - name: WildFly -=- Copy PostgreSQL driver (step 2 of 2)
-  copy: src=postgresql-42.1.4.jar dest={{ wildfly_work_dir }}/modules/org/postgresql/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  copy: src=postgresql/postgresql-42.1.4.jar dest={{ wildfly_work_dir }}/modules/org/postgresql/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
 
 - name: WildFly -=- Delete old LOG directory, if exists
   file:
