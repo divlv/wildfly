@@ -1,0 +1,7 @@
+---
+#
+- include: initial.yml
+- include: java8.yml
+- include: wildfly.yml
+- include: reboot.yml
+#

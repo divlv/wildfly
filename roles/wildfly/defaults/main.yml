@@ -1,0 +1,20 @@
+---
+
+#######################
+# defaults file for wildfly
+
+wildfly_version: 10.0.0.Final
+
+wildfly_manage_user: true
+wildfly_user: wildfly
+wildfly_group: wildfly
+wildfly_service_name: wildfly
+
+wildfly_download_dir: /tmp
+
+# Max POST size = 32Mb
+wildfly_max_data_to_receive: 32000000
+
+wildfly_work_dir: /opt/wildfly
+wildfly_admin_login: "dima"
+wildfly_admin_password: "05alus"

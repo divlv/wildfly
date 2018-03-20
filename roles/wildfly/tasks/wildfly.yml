@@ -1,0 +1,102 @@
+---
+
+- name: WildFly -=- Download from jboss.org
+  get_url: url=http://download.jboss.org/wildfly/10.1.0.Final/wildfly-10.1.0.Final.zip dest=/opt/wildfly-10.1.0.Final.zip
+
+- name: WildFly -=- Extract archive
+  command: chdir=/usr/share unzip -q /opt/wildfly-10.1.0.Final.zip creates=/usr/share/jboss-as
+
+  # Rename the dir to avoid encoding the version in the init script
+- name: WildFly -=- Rename install directory
+  command: chdir=/usr/share mv wildfly-10.1.0.Final jboss-as creates=/usr/share/jboss-as
+
+- name: WildFly -=- Add group
+  group: name={{ wildfly_group }}
+
+- name: WildFly -=- Add user
+  user: name={{ wildfly_user }} group={{ wildfly_group }} home=/usr/share/jboss-as shell=/bin/false
+  
+- name: WildFly -=- Create symbolic link to dir
+  file:
+    src: /usr/share/jboss-as
+    dest: "{{ wildfly_work_dir }}"
+    state: link  
+  
+- name: WildFly -=- Create symbolic link to Standalone dir
+  file:
+    src: /usr/share/jboss-as/standalone
+    dest: /z_stdalone
+    state: link    
+  
+- name: WildFly -=- Copying standalone.xml configuration file
+  template: src=standalone.xml dest={{ wildfly_work_dir }}/standalone/configuration/ owner={{ wildfly_user }} group={{ wildfly_group }}
+
+- name: WildFly -=- Change ownership of WildFly installation
+  file: path=/usr/share/jboss-as/ owner={{ wildfly_user }} group={{ wildfly_group }} state=directory recurse=yes
+
+- name: WildFly -=- Copy global config
+  copy: src=wildfly dest=/etc/default/{{ wildfly_service_name }} group=root owner=root mode=0644
+
+- name: WildFly -=- Copy the init script
+  copy: src=wildfly-init-debian.sh dest=/etc/init.d/{{ wildfly_service_name }} group=root owner=root mode=0755
+
+- name: WildFly -=- Enable to be started at boot (step 1 of 2)
+  command: update-rc.d wildfly defaults
+
+- name: WildFly -=- Enable to be started at boot (step 2 of 2)
+  command: update-rc.d wildfly enable
+
+- name: WildFly -=- Create directory for PostgreSQL driver
+  file: 
+   dest: "{{ wildfly_work_dir }}/modules/org/postgresql/main"
+   owner: "{{ wildfly_user }}"
+   group: "{{ wildfly_group }}"
+   mode: 0755
+   recurse: yes
+   state: directory
+  
+- name: WildFly -=- Copy PostgreSQL driver (step 1 of 2)
+  copy: src=module.xml dest={{ wildfly_work_dir }}/modules/org/postgresql/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  
+- name: WildFly -=- Copy PostgreSQL driver (step 2 of 2)
+  copy: src=postgresql-42.1.4.jar dest={{ wildfly_work_dir }}/modules/org/postgresql/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+
+- name: WildFly -=- Delete old LOG directory, if exists
+  file:
+    state: absent
+    dest: "/usr/share/jboss-as/standalone/log/"
+  
+- name: WildFly -=- Create LOG directory with appropriate access rights
+  file: path=/usr/share/jboss-as/standalone/log
+        state=directory
+        mode=0775
+        owner={{ wildfly_user }}
+        group={{ wildfly_group }}
+
+- name: WildFly -=- Create symbolic link to Standalone Logs dir
+  file:
+    src: /usr/share/jboss-as/standalone/log
+    dest: /z_wildfly_log
+    state: link    
+
+- debug:
+    msg: "WildFly -=- Adjust XMS memory settings"
+        
+- name: sed
+  command: sed -i 's/-Xms64m/-Xms2048m/g' "{{ wildfly_work_dir }}/bin/standalone.conf"
+
+
+- debug:
+    msg: "WildFly -=- Adjust XMX memory settings"
+        
+- name: sed
+  command: sed -i 's/-Xmx512m/-Xmx2048m/g' "{{ wildfly_work_dir }}/bin/standalone.conf"
+        
+   
+- debug:
+    msg: "WildFly -=- Adjust Wildfly timezone"
+        
+   
+- name: sed
+  command: sed -i 's/-Xms2048m/-Duser.timezone=Europe\/Riga -Xms2048m/g' "{{ wildfly_work_dir }}/bin/standalone.conf"
+   
