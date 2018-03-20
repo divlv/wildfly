@@ -46,6 +46,29 @@
 - name: WildFly -=- Enable to be started at boot (step 2 of 2)
   command: update-rc.d wildfly enable
 
+  
+- name: WildFly -=- Create directory for GELF Logging module
+  file: 
+   dest: "{{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main"
+   owner: "{{ wildfly_user }}"
+   group: "{{ wildfly_group }}"
+   mode: 0755
+   recurse: yes
+   state: directory
+  
+- name: WildFly -=- Copy GELF Logging files (step 1 of 4)
+  copy: src=module.xml dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  
+- name: WildFly -=- Copy GELF Logging files (step 2 of 4)
+  copy: src=logstash-gelf-1.11.2.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  
+- name: WildFly -=- Copy GELF Logging files (step 3 of 4)
+  copy: src=commons-pool2-2.4.3.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  
+- name: WildFly -=- Copy GELF Logging files (step 4 of 4)
+  copy: src=jedis-2.9.0.jar dest={{ wildfly_work_dir }}/modules/system/layers/base/biz/paluch/logging/main group={{ wildfly_group }} owner={{ wildfly_user }} mode=0644
+  
+  
 - name: WildFly -=- Create directory for PostgreSQL driver
   file: 
    dest: "{{ wildfly_work_dir }}/modules/org/postgresql/main"
